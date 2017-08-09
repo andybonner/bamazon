@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/andybonner/bamazon#readme",
   "dependencies": {
+    "console.table": "^0.8.0",
     "inquirer": "^3.2.1",
     "mysql": "^2.14.1"
   }
