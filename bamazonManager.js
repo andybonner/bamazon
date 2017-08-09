@@ -25,7 +25,7 @@ function runManager() {
       name: 'action',
       type: 'list',
       message: 'What would you like to do?',
-      choices: ['View products for sale', 'View low inventory', 'Add to inventory', 'Add new product']
+      choices: ['View products for sale', 'View low inventory', 'Add more units of an existing product to inventory', 'Add new product']
     }
   ])
   .then(function(answer) {
@@ -63,5 +63,45 @@ function viewLowInv() {
     if (err) throw err;
     console.log("Items with fewer than 5 units in stock:");
     console.table(results);
+  });
+}
+
+function addInv() {
+  // prefill an array with the products for inquirer to use
+  let choiceArray = [];
+  connection.query("SELECT * FROM products", function (err, results) {
+    if (err) throw err;
+    // concatenate each row's item_id, product_name, and stock_quantity into a single string, to become a line in inquirer's 'choices', and later split to re-access those values
+    results.forEach(row => choiceArray.push(row.item_id + ". " + row.product_name + "  -- " + row.stock_quantity + " in stock)"));
+    
+    inquirer.prompt([
+      {
+        name: 'productChoice',
+        type: 'list',
+        message: 'Which product would you like to restock?',
+        choices: choiceArray
+      },
+      {
+        name: 'newQuantity',
+        type: 'input',
+        message: 'How many units would you like to add?'
+      }
+    ])
+    .then(function(answers){
+      // UPDATE db row WHERE item_id is harvested from the beginning of inquirer's answer.productChoice, and current quantity from the end
+      let itemId = answers.productChoice.split(".")[0];
+      let currentQuantity = answers.productChoice.split(" -- ")[1].split(" ")[0];
+      let totalQuantity = parseInt(currentQuantity) + parseInt(answers.newQuantity);
+      // prebuild query
+      let query = "UPDATE products SET stock_quantity=" + totalQuantity + " WHERE item_id=" + itemId;
+      connection.query(query, function (err) {
+        if (err) throw err;
+        console.log("Product updated! Now:");
+        // get updated data
+        connection.query("SELECT * FROM products WHERE item_id=" + itemId, function(err, results){
+          console.table(results);
+        });
+      });
+    });
   });
 }
