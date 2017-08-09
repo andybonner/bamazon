@@ -21,7 +21,7 @@ connection.connect(function (err) {
 
 function runSale() {
   // fetch and display db data
-  let query = connection.query("SELECT * FROM products ORDER BY item_id", function (err, results) {
+  connection.query("SELECT * FROM products ORDER BY item_id", function (err, results) {
     if (err) throw err;
     console.log("/////////////////////////////////////////////"
       + "\nOur inventory:");
