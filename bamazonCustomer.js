@@ -22,7 +22,6 @@ function runSale() {
   // fetch and display db data
   let query = connection.query("SELECT * FROM products ORDER BY item_id", function (err, results) {
     if (err) throw err;
-    console.log(results);
     console.log("/////////////////////////////////////////////"
       + "\nOur inventory:");
     console.table(results);
@@ -46,7 +45,6 @@ function runSale() {
           productChoice = product;
         }
       });
-      console.log(productChoice.stock_quantity);
       // get user's quantity desired
       inquirer.prompt([
         {
@@ -60,8 +58,6 @@ function runSale() {
         }
       ])
       .then(answer => {
-        console.log("answer 2", answer);
-        console.log("productChoice:", productChoice)
         // deduct db inventory by answer.quantity (to num)
         connection.query(
           "UPDATE products SET ? WHERE ?",
@@ -72,6 +68,8 @@ function runSale() {
           function(err){
             if (err) throw err;
             console.log("OK, it's yours!");
+            console.log("Let's see, " + answer.quantity + " units at $" + productChoice.price + "...");
+            console.log("That'll be $" + productChoice.price * answer.quantity + " please.");
             runSale();
           }
         );
