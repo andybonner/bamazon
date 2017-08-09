@@ -19,6 +19,7 @@ connection.connect(function (err) {
 });
 
 function runSupervisor() {
+  console.log("/////////////////////////////////////////////");
   inquirer.prompt([
     {
       name: 'action',
@@ -28,7 +29,7 @@ function runSupervisor() {
     }
   ])
   .then(function(answer){
-    switch (answer.choices) {
+    switch (answer.action) {
       case 'View product sales by department':
         viewDepts();
         break;
@@ -44,7 +45,17 @@ function runSupervisor() {
 }
 
 function viewDepts() {
-  
+  let query = `
+    SELECT departments.department_id, departments.department_name, departments.overhead_costs,
+    sum(products.product_sales) AS product_sales, (product_sales - departments.overhead_costs) AS total_profit
+    FROM products
+    INNER JOIN departments ON products.department_name = departments.department_name
+    GROUP BY products.department_name;
+  `
+  connection.query(query, function(err, res){
+    console.table(res);
+    runSupervisor();
+  })
 }
 
 function createDept() {
