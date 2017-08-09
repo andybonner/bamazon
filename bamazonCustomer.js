@@ -4,6 +4,7 @@ const inquirer = require("inquirer");
 require("console.table");
 let productChoice;
 
+// configure MySQL connection
 let connection = mysql.createConnection({
   host: "localhost",
   port: 3306,
@@ -38,7 +39,7 @@ function runSale() {
         }
       }
     ])
-    .then(answer => {
+    .then(function(answer) {
       // store db row for chosen product in productChoice
       results.forEach(function(product) {
         if (product.product_name === answer.product_name) {
@@ -51,13 +52,13 @@ function runSale() {
           name: "quantity",
           type: "input",
           message: "How many would you like to buy?",
-          validate: input => {
+          validate: function(input) {
             // check against inventory available; if user asks for too much, prompt won't continue
             return input <= productChoice.stock_quantity || "Sorry, we don't have that many in stock. Try again!";
           }
         }
       ])
-      .then(answer => {
+      .then(function(answer) {
         // deduct db inventory by answer.quantity (to num)
         connection.query(
           "UPDATE products SET ? WHERE ?",
