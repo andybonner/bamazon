@@ -53,11 +53,32 @@ function viewDepts() {
     GROUP BY products.department_name;
   `
   connection.query(query, function(err, res){
+    if (err) throw err;
     console.table(res);
     runSupervisor();
   })
 }
 
 function createDept() {
-  
+  inquirer.prompt([
+    {
+      name: 'department_name',
+      type: 'input',
+      message: 'What is the new department\'s name?'
+    }, {
+      name: 'overhead_costs',
+      type: 'input',
+      message: 'What are its overhead costs?'
+    }
+  ])
+  .then(function(answers){
+    connection.query("INSERT INTO departments SET ?", answers, function(err, res){
+      if (err) throw err;
+      console.log("Department created successfully!");
+      connection.query("SELECT * FROM departments WHERE department_id=" + res.insertId, function(err, res){
+        console.table(res);
+        runSupervisor();
+      });
+    })
+  });
 }
