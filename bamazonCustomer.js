@@ -60,17 +60,19 @@ function runSale() {
       ])
       .then(function(answer) {
         // deduct db inventory by answer.quantity (to num)
-        connection.query(
-          "UPDATE products SET ? WHERE ?",
-          [
-            {stock_quantity: (productChoice.stock_quantity - answer.quantity)},
-            {item_id: productChoice.item_id}
-          ],
-          function(err){
+        let saleAmount = parseInt(productChoice.price) * parseInt(answer.quantity);
+        let query = "UPDATE products SET stock_quantity=?, product_sales=? WHERE item_id= ?";
+        let values = [
+          productChoice.stock_quantity - answer.quantity,
+          productChoice.product_sales + saleAmount,
+          productChoice.item_id
+        ];
+        console.log("saleAmount:", saleAmount, "query", query, "values", values);
+        connection.query(query, values, function(err){
             if (err) throw err;
             console.log("OK, it's yours!");
             console.log("Let's see, " + answer.quantity + " units at $" + productChoice.price + "...");
-            console.log("That'll be $" + productChoice.price * answer.quantity + " please.");
+            console.log("That'll be $" + saleAmount + " please.");
             runSale();
           }
         );
