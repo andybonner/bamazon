@@ -55,6 +55,7 @@ function viewProducts() {
     if (err) throw err;
     console.log("Current inventory:");
     console.table(results);
+    runManager();
   });
 }
 
@@ -63,6 +64,7 @@ function viewLowInv() {
     if (err) throw err;
     console.log("Items with fewer than 5 units in stock:");
     console.table(results);
+    runManager();
   });
 }
 
@@ -100,7 +102,41 @@ function addInv() {
         // get updated data
         connection.query("SELECT * FROM products WHERE item_id=" + itemId, function(err, results){
           console.table(results);
+          runManager();
         });
+      });
+    });
+  });
+}
+
+function addProduct() {
+  inquirer.prompt([
+    {
+      name: 'product_name',
+      type: 'input',
+      message: 'What is the new product\'s name?'
+    }, {
+      name: 'department_name',
+      type: 'input',
+      message: 'What department is it in?'
+    }, {
+      name: 'price',
+      type: 'input',
+      message: 'What is the price per unit?'
+    }, {
+      name: 'stock_quantity',
+      type: 'input',
+      message: 'How many units are in stock?'
+    }
+  ])
+  .then(function(answers){
+    connection.query("INSERT INTO products SET ?", answers, function(err, results){
+      if (err) throw err;
+      console.log("Product successfully added!");
+      // console.table the new db row. The response from the INSERT query include a key "insertId," which can let us reference the new row.
+      connection.query("SELECT * FROM products WHERE item_id=" + results.insertId, function(err, results){
+        console.table(results);
+        runManager();
       });
     });
   });
