@@ -36,7 +36,7 @@ function runManager() {
       case 'View low inventory':
         viewLowInv();
         break;
-      case 'Add to inventory':
+      case 'Add more units of an existing product to inventory':
         addInv();
         break;
       case 'Add new product':
@@ -54,6 +54,14 @@ function viewProducts() {
   connection.query("SELECT * FROM products ORDER BY item_id", function (err, results) {
     if (err) throw err;
     console.log("Current inventory:");
+    console.table(results);
+  });
+}
+
+function viewLowInv() {
+  connection.query("SELECT * FROM products WHERE stock_quantity < 5 ORDER BY stock_quantity;", function (err, results) {
+    if (err) throw err;
+    console.log("Items with fewer than 5 units in stock:");
     console.table(results);
   });
 }
