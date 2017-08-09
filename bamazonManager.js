@@ -19,6 +19,7 @@ connection.connect(function (err) {
 });
 
 function runManager() {
+  console.log("/////////////////////////////////////////////");
   inquirer.prompt([
     {
       name: 'action',
@@ -41,6 +42,18 @@ function runManager() {
       case 'Add new product':
         addProduct();
         break;
+      default:
+        console.log("Error, starting over...");
+        runManager();
+        break;
     }
+  });
+}
+
+function viewProducts() {
+  connection.query("SELECT * FROM products ORDER BY item_id", function (err, results) {
+    if (err) throw err;
+    console.log("Current inventory:");
+    console.table(results);
   });
 }
