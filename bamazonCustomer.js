@@ -21,11 +21,11 @@ connection.connect(function (err) {
 
 function runSale() {
   // fetch and display db data
-  connection.query("SELECT * FROM products ORDER BY item_id", function (err, results) {
+  connection.query("SELECT * FROM products ORDER BY item_id", function (err, res) {
     if (err) throw err;
     console.log("/////////////////////////////////////////////"
       + "\nOur inventory:");
-    console.table(results);
+    console.table(res);
     // get user's choice of product
     inquirer.prompt([
       {
@@ -34,14 +34,14 @@ function runSale() {
         message: "Which product would you like to buy?",
         choices: function () {
           let choiceArray = [];
-          results.forEach(product => choiceArray.push(product.product_name));
+          res.forEach(product => choiceArray.push(product.product_name));
           return choiceArray;
         }
       }
     ])
     .then(function(answer) {
       // store db row for chosen product in productChoice
-      results.forEach(function(product) {
+      res.forEach(function(product) {
         if (product.product_name === answer.product_name) {
           productChoice = product;
         }

@@ -51,19 +51,19 @@ function runManager() {
 }
 
 function viewProducts() {
-  connection.query("SELECT * FROM products ORDER BY item_id", function (err, results) {
+  connection.query("SELECT * FROM products ORDER BY item_id", function (err, res) {
     if (err) throw err;
     console.log("Current inventory:");
-    console.table(results);
+    console.table(res);
     runManager();
   });
 }
 
 function viewLowInv() {
-  connection.query("SELECT * FROM products WHERE stock_quantity < 5 ORDER BY stock_quantity;", function (err, results) {
+  connection.query("SELECT * FROM products WHERE stock_quantity < 5 ORDER BY stock_quantity;", function (err, res) {
     if (err) throw err;
     console.log("Items with fewer than 5 units in stock:");
-    console.table(results);
+    console.table(res);
     runManager();
   });
 }
@@ -71,10 +71,10 @@ function viewLowInv() {
 function addInv() {
   // prefill an array with the products for inquirer to use
   let choiceArray = [];
-  connection.query("SELECT * FROM products", function (err, results) {
+  connection.query("SELECT * FROM products", function (err, res) {
     if (err) throw err;
     // concatenate each row's item_id, product_name, and stock_quantity into a single string, to become a line in inquirer's 'choices', and later split to re-access those values
-    results.forEach(row => choiceArray.push(row.item_id + ". " + row.product_name + "  -- " + row.stock_quantity + " in stock)"));
+    res.forEach(row => choiceArray.push(row.item_id + ". " + row.product_name + "  -- " + row.stock_quantity + " in stock)"));
     
     inquirer.prompt([
       {
@@ -100,8 +100,8 @@ function addInv() {
         if (err) throw err;
         console.log("Product updated! Now:");
         // get updated data
-        connection.query("SELECT * FROM products WHERE item_id=" + itemId, function(err, results){
-          console.table(results);
+        connection.query("SELECT * FROM products WHERE item_id=" + itemId, function(err, res){
+          console.table(res);
           runManager();
         });
       });
@@ -130,12 +130,12 @@ function addProduct() {
     }
   ])
   .then(function(answers){
-    connection.query("INSERT INTO products SET ?", answers, function(err, results){
+    connection.query("INSERT INTO products SET ?", answers, function(err, res){
       if (err) throw err;
       console.log("Product successfully added!");
       // console.table the new db row. The response from the INSERT query include a key "insertId," which can let us reference the new row.
-      connection.query("SELECT * FROM products WHERE item_id=" + results.insertId, function(err, results){
-        console.table(results);
+      connection.query("SELECT * FROM products WHERE item_id=" + res.insertId, function(err, res){
+        console.table(res);
         runManager();
       });
     });
