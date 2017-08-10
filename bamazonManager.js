@@ -74,8 +74,9 @@ function addInv() {
   connection.query("SELECT * FROM products", function (err, res) {
     if (err) throw err;
     // concatenate each row's item_id, product_name, and stock_quantity into a single string, to become a line in inquirer's 'choices', and later split to re-access those values
-    res.forEach(row => choiceArray.push(row.item_id + ". " + row.product_name + "  -- " + row.stock_quantity + " in stock)"));
+    res.forEach(row => choiceArray.push(row.item_id + ". " + row.product_name + "  -- " + row.stock_quantity + " in stock"));
     
+
     inquirer.prompt([
       {
         name: 'productChoice',
